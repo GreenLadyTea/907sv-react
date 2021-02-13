@@ -9,9 +9,10 @@
     <script src="libraries/react.development.js"></script>
     <script src="libraries/react-dom.development.js"></script>
     <script src="libraries/babel.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
     <style type="text/css">
         #wrapper {
-            padding: 20px;
+            padding: 6%;
             text-align: center;
         }
 
@@ -21,13 +22,172 @@
         }
     </style>
     <script type="text/babel">
-        function App() {
-            const [count, setCount] = React.useState(0);
+        function Converter() {
+            const [celsiusDegrees, setCelsiusDegrees] = React.useState(0);
+            const [fahrenheitDegrees, setFahrenheitDegrees] = React.useState(0);
+
+            function convertToFahrenheit(event) {
+                const newCelsius = event.target.value;
+                setCelsiusDegrees(newCelsius);
+                setFahrenheitDegrees(newCelsius * 9 / 5 + 32);
+            }
+
+            function convertToCelsius(event) {
+                const newFahrenheit = event.target.value;
+                setFahrenheitDegrees(newFahrenheit);
+                setCelsiusDegrees((newFahrenheit - 32) * 5 / 9);
+            }
+
             return <>
-                <button onClick={() => setCount(count - 1)}>-</button>&nbsp;
-                {count}&nbsp;
-                <button onClick={() => setCount(count + 1)}>+</button>
+                <label>
+                    Градусы Цельсия:
+                    <input
+                        type="text"
+                        value={celsiusDegrees}
+                        onChange={convertToFahrenheit}
+                    />
+                </label>
+                <br/>
+                <label>
+                    Градусы Фаренгейта:
+                    <input
+                        type="text"
+                        value={fahrenheitDegrees}
+                        onChange={convertToCelsius}
+                    />
+                </label>
             </>;
+        }
+
+        function Calculator() {
+            const [operator1, setOperator1] = React.useState(0);
+            const [operator2, setOperator2] = React.useState(0);
+            const [operation, setOperation] = React.useState('+');
+            const operations = {
+                ADD: '+',
+                SUB: '-',
+                MUL: '*',
+                DIV: '/'
+            };
+
+            function getResult() {
+                switch (operation){
+                    case operations.ADD:
+                        return Number.parseInt(operator1) + Number.parseInt(operator2);
+                    case operations.SUB:
+                        return operator1 - operator2;
+                    case operations.MUL:
+                        return operator1 * operator2;
+                    case operations.DIV:
+                        if(!operator2){
+                            return 'На ноль делить нельзя!';
+                        }
+                        return operator1 / operator2;
+                }
+            }
+
+            return <>
+                <label>
+                    Первый оператор:
+                    <input
+                        type="number"
+                        value={operator1}
+                        onChange={e => setOperator1(e.target.value)}
+                    />
+                </label>
+                <br/>
+                <label>
+                    Второй оператор:
+                    <input
+                        type="number"
+                        value={operator2}
+                        onChange={e => setOperator2(e.target.value)}
+                    />
+                </label>
+                <br/>
+                <label>
+                    Операция:
+                    <select
+                        value={operation}
+                        onChange={e => setOperation(e.target.value)}>
+                        {Object.values(operations).map((variant, index) => (<option key={index}>{variant}</option>))}
+                    </select>
+                </label>
+                <div>
+                    <h1>Результат:</h1>
+                    <br/>
+                    {getResult()}
+                </div>
+            </>;
+        }
+
+        function BasesConverter(){
+            const bases = ['2', '8', '10', '16'];
+            const [number1, setNumber1] = React.useState('0');
+            const [number2, setNumber2] = React.useState('0');
+            const [base2, setBase2] = React.useState('2');
+
+            function convertFrom10(event){
+                const newResult = event.target.value;
+                setNumber1(newResult);
+                setNumber2(Number(newResult).toString(base2));
+            }
+
+            function convertTo10(event){
+                const newNum = event.target.value;
+                setNumber2(newNum);
+                setNumber1(Number.parseInt(newNum, base2));
+            }
+
+            function handleSelection(event){
+                const newBase = event.target.value;
+                setBase2(newBase);
+                setNumber2(Number(number1).toString(newBase));
+            }
+
+            return <>
+                <label>
+                    Число в десятичной системе
+                    <input
+                        type="text"
+                        value={number1}
+                        onChange={convertFrom10}
+                    />
+                </label>
+                <br/>
+                <label>
+                    <select value={base2} onChange={handleSelection}>
+                        {bases.map((variant, index) => (<option key={index}>{variant}</option>))}
+                    </select>
+                </label>
+                <label>
+                    <input
+                        type="text"
+                        value={number2}
+                        onChange={convertTo10}
+                    />
+                </label>
+            </>
+        }
+
+        function App(){
+            return <>
+                <div>
+                    <h1>Конвертация градусов</h1>
+                    <br/>
+                    <Converter/>
+                </div>
+                <div>
+                    <h1>Калькулятор</h1>
+                    <br/>
+                    <Calculator/>
+                </div>
+                <div>
+                    <h1>Перевод по системам счисления</h1>
+                    <br/>
+                    <BasesConverter/>
+                </div>
+            </>
         }
 
         ReactDOM.render(<App/>, document.getElementById('root'));
