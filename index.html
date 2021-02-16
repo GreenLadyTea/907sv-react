@@ -170,6 +170,46 @@
             </>
         }
 
+        function CitiesList(){
+            const url = 'https://raw.githubusercontent.com/pensnarik/russian-cities/master/russian-cities.json';
+            const [towns, setTowns] = React.useState([]);
+            //const cities = ['Madrid', 'Milan', 'Paris', 'Prague', 'London', 'Londonderry', 'Oslo', 'Warsaw', 'Moscow', 'Rome', 'Belfast', 'Berlin', 'Beijing', 'Copenhagen', 'Washington', 'York', 'New-York']
+            const [substr, setSubstr] = React.useState('');
+
+            React.useEffect(async() => {
+                let response = await fetch(url);
+                let newTowns = await response.json();
+                let townNames = newTowns.map((town) => town.name);
+                setTowns(townNames);
+            }, []);
+
+            function myFilter(city){
+                let first = city.toUpperCase();
+                let second = substr.toUpperCase();
+                return first.indexOf(second) !== -1;
+            }
+
+            function renderArray(){
+                const newArray = [...towns].filter(myFilter);
+                newArray.splice(10);
+                return <>
+                    {newArray.map((variant, index) => (<div key={index}>{variant}</div>))}
+                </>
+            }
+
+            return <>
+                <label>Выберите город:
+                    <input
+                        value={substr}
+                        onChange={e => setSubstr(e.target.value)}
+                    />
+                </label>
+                <div>
+                    {renderArray()}
+                </div>
+            </>
+        }
+
         function App(){
             return <>
                 <div>
@@ -186,6 +226,11 @@
                     <h1>Перевод по системам счисления</h1>
                     <br/>
                     <BasesConverter/>
+                </div>
+                <div>
+                    <h1>Города</h1>
+                    <br/>
+                    <CitiesList/>
                 </div>
             </>
         }
