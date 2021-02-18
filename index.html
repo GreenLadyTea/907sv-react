@@ -244,17 +244,13 @@
             const [color, setColor] = React.useState(colors.RED);
 
             function changeColor() {
-                setColor(color => {
-                    if (color === colors.RED) return colors.YELLOW_RED;
-                    else if (color === colors.YELLOW_RED) return colors.GREEN;
-                    else if (color === colors.GREEN) return colors.YELLOW_GREEN;
-                    else if (color === colors.YELLOW_GREEN) return colors.RED;
-                });
+                    if (color === colors.RED) setColor(colors.YELLOW_RED);
+                    else if (color === colors.YELLOW_RED) setColor(colors.GREEN);
+                    else if (color === colors.GREEN) setColor(colors.YELLOW_GREEN);
+                    else if (color === colors.YELLOW_GREEN) setColor(colors.RED);
             }
 
-            React.useEffect(() => {
-                setInterval(changeColor, 1000);
-            }, []);
+            setTimeout(changeColor, 1000);
 
             return <>
                 <div className={'trafficLight ' + (color === colors.RED ? 'redLight' : '')}/>
