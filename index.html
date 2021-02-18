@@ -26,6 +26,7 @@
             height: 100px;
             border-radius: 50%;
             margin-left: 50%;
+            background-color: black;
         }
 
         .greenLight {
@@ -40,7 +41,7 @@
             background-color: yellow;
         }
 
-        .yellowGreenLight {
+        .yellowLight {
             background-color: yellow;
         }
     </style>
@@ -235,15 +236,15 @@
 
         function TrafficLight() {
             const colors ={
-                RED: 'redLight',
-                YELLOW_RED: 'yellowRedLight',
-                GREEN: 'greenLight',
-                YELLOW_GREEN: 'yellowGreenLight'
+                RED: 'red',
+                YELLOW_RED: 'yellowRed',
+                GREEN: 'green',
+                YELLOW_GREEN: 'yellowGreen'
             };
             const [color, setColor] = React.useState(colors.RED);
 
             function changeColor() {
-                setColor(() => {
+                setColor(color => {
                     if (color === colors.RED) return colors.YELLOW_RED;
                     else if (color === colors.YELLOW_RED) return colors.GREEN;
                     else if (color === colors.GREEN) return colors.YELLOW_GREEN;
@@ -252,18 +253,20 @@
             }
 
             React.useEffect(() => {
-                setTimeout(changeColor, 1000);
-            });
+                setInterval(changeColor, 1000);
+            }, []);
 
             return <>
-                <div className={'trafficLight ' + color}/>
+                <div className={'trafficLight ' + (color === colors.RED ? 'redLight' : '')}/>
+                <div className={'trafficLight ' + (color === colors.YELLOW_GREEN || color === colors.YELLOW_RED ? 'yellowLight' : '')}/>
+                <div className={'trafficLight ' + (color === colors.GREEN ? 'greenLight' : '')}/>
             </>
         }
 
         function App(){
             return <>
                 <div>
-                    <h1>Города</h1>
+                    <h1>Светофор</h1>
                     <br/>
                     <TrafficLight/>
                 </div>
