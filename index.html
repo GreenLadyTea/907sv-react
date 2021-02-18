@@ -95,7 +95,7 @@
             };
 
             function getResult() {
-                switch (operation){
+                switch (operation) {
                     case operations.ADD:
                         return Number.parseInt(operator1) + Number.parseInt(operator2);
                     case operations.SUB:
@@ -103,7 +103,7 @@
                     case operations.MUL:
                         return operator1 * operator2;
                     case operations.DIV:
-                        if(!operator2){
+                        if (!operator2) {
                             return 'На ноль делить нельзя!';
                         }
                         return operator1 / operator2;
@@ -145,25 +145,25 @@
             </>;
         }
 
-        function BasesConverter(){
+        function BasesConverter() {
             const bases = ['2', '8', '10', '16'];
             const [number1, setNumber1] = React.useState('0');
             const [number2, setNumber2] = React.useState('0');
             const [base2, setBase2] = React.useState('2');
 
-            function convertFrom10(event){
+            function convertFrom10(event) {
                 const newResult = event.target.value;
                 setNumber1(newResult);
                 setNumber2(Number(newResult).toString(base2));
             }
 
-            function convertTo10(event){
+            function convertTo10(event) {
                 const newNum = event.target.value;
                 setNumber2(newNum);
                 setNumber1(Number.parseInt(newNum, base2));
             }
 
-            function handleSelection(event){
+            function handleSelection(event) {
                 const newBase = event.target.value;
                 setBase2(newBase);
                 setNumber2(Number(number1).toString(newBase));
@@ -194,26 +194,26 @@
             </>
         }
 
-        function CitiesList(){
+        function CitiesList() {
             const url = 'https://raw.githubusercontent.com/pensnarik/russian-cities/master/russian-cities.json';
             const [towns, setTowns] = React.useState([]);
             //const cities = ['Madrid', 'Milan', 'Paris', 'Prague', 'London', 'Londonderry', 'Oslo', 'Warsaw', 'Moscow', 'Rome', 'Belfast', 'Berlin', 'Beijing', 'Copenhagen', 'Washington', 'York', 'New-York']
             const [substr, setSubstr] = React.useState('');
 
-            React.useEffect(async() => {
+            React.useEffect(async () => {
                 let response = await fetch(url);
                 let newTowns = await response.json();
                 let townNames = newTowns.map((town) => town.name);
                 setTowns(townNames);
             }, []);
 
-            function myFilter(city){
+            function myFilter(city) {
                 let first = city.toUpperCase();
                 let second = substr.toUpperCase();
                 return first.indexOf(second) !== -1;
             }
 
-            function renderArray(){
+            function renderArray() {
                 const newArray = [...towns].filter(myFilter);
                 newArray.splice(20);
                 return <>
@@ -235,31 +235,70 @@
         }
 
         function TrafficLight() {
-            const colors ={
+            const colors = {
                 RED: 'red',
                 YELLOW_RED: 'yellowRed',
                 GREEN: 'green',
                 YELLOW_GREEN: 'yellowGreen'
             };
+            const times = {
+                MOVE: 5,
+                WAIT: 2
+            }
             const [color, setColor] = React.useState(colors.RED);
+            const [delay, setDelay] = React.useState(times.MOVE);
 
             function changeColor() {
-                    if (color === colors.RED) setColor(colors.YELLOW_RED);
-                    else if (color === colors.YELLOW_RED) setColor(colors.GREEN);
-                    else if (color === colors.GREEN) setColor(colors.YELLOW_GREEN);
-                    else if (color === colors.YELLOW_GREEN) setColor(colors.RED);
+                console.log(color);
+                if (color === colors.RED) setTimeout(() => setColor(colors.YELLOW_RED), times.MOVE * 1000);
+                else if (color === colors.YELLOW_RED) {
+                    setTimeout(() => setColor(colors.GREEN), times.WAIT * 1000);
+                    setDelay(times.WAIT);
+                } else if (color === colors.GREEN) {
+                    setTimeout(() => setColor(colors.YELLOW_GREEN), times.MOVE * 1000);
+                    setDelay(times.MOVE);
+                } else if (color === colors.YELLOW_GREEN) {
+                    setTimeout(() => setColor(colors.RED), times.WAIT * 1000);
+                    setDelay(times.WAIT);
+                }
             }
 
-            setTimeout(changeColor, 1000);
+            React.useEffect(() => {
+                changeColor();
+            }, [])
 
             return <>
                 <div className={'trafficLight ' + (color === colors.RED ? 'redLight' : '')}/>
-                <div className={'trafficLight ' + (color === colors.YELLOW_GREEN || color === colors.YELLOW_RED ? 'yellowLight' : '')}/>
+                <div
+                    className={'trafficLight ' + (color === colors.YELLOW_GREEN || color === colors.YELLOW_RED ? 'yellowLight' : '')}/>
                 <div className={'trafficLight ' + (color === colors.GREEN ? 'greenLight' : '')}/>
+                <Timer delay={delay}/>
             </>
         }
 
-        function App(){
+        function Timer({delay}) {
+            const [remainingTime, setRemainingTime] = React.useState(delay);
+
+            React.useEffect(() => {
+                const timerId = setInterval(() => {
+                    setRemainingTime(remainingTime => {
+                        if (remainingTime) {
+                            return remainingTime - 1;
+                        } else {
+                            clearInterval(timerId);
+                        }
+                    });
+                }, 1000);
+
+                return () => {
+                    clearInterval(timerId);
+                }
+            }, [delay])
+
+            return <div>{remainingTime}</div>;
+        }
+
+        function App() {
             return <>
                 <div>
                     <h1>Светофор</h1>
@@ -288,6 +327,7 @@
                 </div>
             </>
         }
+
         ReactDOM.render(<App/>, document.getElementById('root'));
     </script>
 </head>
