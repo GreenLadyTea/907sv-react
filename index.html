@@ -20,6 +20,29 @@
             width: 800px;
             margin: 0 auto;
         }
+
+        .trafficLight {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-left: 50%;
+        }
+
+        .greenLight {
+            background-color: lawngreen;
+        }
+
+        .redLight {
+            background-color: red;
+        }
+
+        .yellowRedLight {
+            background-color: yellow;
+        }
+
+        .yellowGreenLight {
+            background-color: yellow;
+        }
     </style>
     <script type="text/babel">
         function Converter() {
@@ -191,7 +214,7 @@
 
             function renderArray(){
                 const newArray = [...towns].filter(myFilter);
-                newArray.splice(10);
+                newArray.splice(20);
                 return <>
                     {newArray.map((variant, index) => (<div key={index}>{variant}</div>))}
                 </>
@@ -210,8 +233,40 @@
             </>
         }
 
+        function TrafficLight() {
+            const colors ={
+                RED: 'redLight',
+                YELLOW_RED: 'yellowRedLight',
+                GREEN: 'greenLight',
+                YELLOW_GREEN: 'yellowGreenLight'
+            };
+            const [color, setColor] = React.useState(colors.RED);
+
+            function changeColor() {
+                setColor(() => {
+                    if (color === colors.RED) return colors.YELLOW_RED;
+                    else if (color === colors.YELLOW_RED) return colors.GREEN;
+                    else if (color === colors.GREEN) return colors.YELLOW_GREEN;
+                    else if (color === colors.YELLOW_GREEN) return colors.RED;
+                });
+            }
+
+            React.useEffect(() => {
+                setTimeout(changeColor, 1000);
+            });
+
+            return <>
+                <div className={'trafficLight ' + color}/>
+            </>
+        }
+
         function App(){
             return <>
+                <div>
+                    <h1>Города</h1>
+                    <br/>
+                    <TrafficLight/>
+                </div>
                 <div>
                     <h1>Конвертация градусов</h1>
                     <br/>
@@ -234,7 +289,6 @@
                 </div>
             </>
         }
-
         ReactDOM.render(<App/>, document.getElementById('root'));
     </script>
 </head>
